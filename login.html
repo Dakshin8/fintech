@@ -202,13 +202,13 @@
             </div>
             <input type="password" id="password" placeholder="••••••••" required>
         </div>
-        <button type="submit" id="signInBtn" class="btn-submit">Sign In</button>
+        <button type="button" id="loginBtn" class="btn-submit">Sign In</button>
         <p id="error-msg" style="color: #ef4444; font-size: 13px; margin-top: 10px; display: none; text-align: center;">
             Invalid email or password. Try again.
         </p>
     </form>
     <div class="auth-switch">
-        New to Truva? <a onclick="toggleAuth('signup')">Create account</a>
+        New to Treuus? <a onclick="toggleAuth('signup')">Create account</a>
     </div>
 </div>
 
@@ -265,8 +265,7 @@
     </div>
 
     <script>
-<script>
-    // Keep your toggleAuth function here...
+    // Toggle logic for Login/Signup
     function toggleAuth(view) {
         const login = document.getElementById('login-view');
         const signup = document.getElementById('signup-view');
@@ -279,27 +278,35 @@
         }
     }
 
-    // Logic for the Sign In button
-    document.querySelector('.btn-submit').onclick = function() {
-        // This 'grabs' the email and password from your inputs
-        const email = document.querySelector('input[type="email"]').value;
-        const password = document.querySelector('input[type="password"]').value;
+    // Force Login Logic
+    document.addEventListener('click', function (event) {
+        // If the clicked element is our button
+        if (event.target && event.target.id === 'loginBtn') {
+            
+            // 1. Grab values using general selectors
+            const emailInput = document.querySelector('input[type="email"]');
+            const passwordInput = document.querySelector('input[type="password"]');
+            
+            const email = emailInput.value;
+            const password = passwordInput.value;
 
-        // THE CHECK
-        if (email === "admin@treuus.com" && password === "treuus2026") {
-            window.location.href = "dashboard.html";
-        } else {
-            alert("Wrong email or password! Use admin@treuus.com / treuus2026");
+            // 2. The Check
+            if (email === "admin@treuus.com" && password === "treuus2026") {
+                console.log("Success! Redirecting...");
+                window.location.href = "dashboard.html";
+            } else {
+                alert("Please use: admin@treuus.com and treuus2026");
+            }
         }
-    };
+    });
 </script>
 
 
-</script>
-    </script>
+
 </body>
 
 </html>
+
 
 
 

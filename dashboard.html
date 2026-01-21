@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treuus - Compliance System of Record</title>
+    
+    <!-- FAVICON -->
+    <link rel="icon" href="Asset/Fevicon-01.png">
+
+    <!-- FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- TRUVA DESIGN SYSTEM V4.1 (Fixed Team Stack) --- */
+        :root {
+            --bg-body: #F1F5F9;
+            --bg-surface: #FFFFFF;
+            --bg-subtle: #F8FAFC;
+            --border: #E2E8F0;
+            --txt-main: #0F172A;
+            --txt-sec: #475569;
+            --txt-mute: #94A3B8;
+            --primary: #0F172A; 
+            --accent: #2563EB; /* TRUVA BLUE */
+            --accent-dark: #1d4ed8;
+            --accent-soft: #EFF6FF;
+            --risk: #EF4444; --risk-bg: #FEF2F2;
+            --safe: #10B981; --safe-bg: #ECFDF5;
+            --warn: #F59E0B; --warn-bg: #FFFBEB;
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-popover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        /* RESET & SCROLL */
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        html, body { height: 100%; width: 100%; font-family: 'Inter', sans-serif; background: var(--bg-body); color: var(--txt-main); display: flex; overflow: hidden; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+        button { cursor: pointer; font-family: inherit; transition: 0.2s; }
+        svg { display: block; flex-shrink: 0; }
+        .row { display: flex; align-items: center; }
+        .col { display: flex; flex-direction: column; }
+        .justify-between { justify-content: space-between; }
+
+        /* --- SIDEBAR --- */
+        .sidebar { width: 250px; background: var(--bg-surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; z-index: 50; }
+        .brand-box { height: 64px; display: flex; align-items: center; padding: 0 20px; gap: 12px; border-bottom: 1px solid var(--bg-body); }
+        .logo-mark { width: 28px; height: 28px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-family: 'Plus Jakarta Sans'; }
+        .brand-text { font-family: 'Plus Jakarta Sans'; font-weight: 700; font-size: 18px; letter-spacing: -0.5px; }
+
+        .nav-section { padding: 24px 16px 8px 16px; font-size: 11px; font-weight: 700; color: var(--txt-mute); text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; margin: 2px 12px; border-radius: 6px; color: var(--txt-sec); font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; }
+        .nav-item:hover { background: var(--bg-subtle); color: var(--txt-main); }
+        .nav-item.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+        .nav-item.active svg { color: var(--accent); }
+        .nav-badge { margin-left: auto; font-size: 10px; font-weight: 700; background: var(--risk); color: white; padding: 2px 6px; border-radius: 10px; }
+
+        /* --- HEADER --- */
+        .app-main { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
+        .top-header { height: 64px; background: var(--bg-surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; z-index: 40; }
+        
+        .search-memory { display: flex; align-items: center; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; width: 400px; gap: 10px; }
+        .search-memory:focus-within { background: white; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+        .search-memory input { border: none; background: transparent; font-size: 13px; width: 100%; color: var(--txt-main); }
+
+        /* NOTIFICATIONS & DROPDOWNS */
+        .nav-icon-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: var(--txt-sec); cursor: pointer; position: relative; transition: 0.2s; }
+        .nav-icon-btn:hover { background: var(--bg-subtle); color: var(--txt-main); }
+        .nav-icon-btn.active { background: var(--accent-soft); color: var(--accent); }
+        .notif-badge { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: var(--risk); border: 2px solid white; border-radius: 50%; }
+
+        .dropdown-menu { position: absolute; top: 50px; right: 0; width: 280px; background: white; border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow-popover); display: none; flex-direction: column; padding: 6px; animation: fadeUp 0.1s ease; z-index: 100; }
+        .dropdown-menu.show { display: flex; }
+        .dropdown-header { padding: 12px 12px 8px 12px; font-size: 11px; font-weight: 700; color: var(--txt-mute); text-transform: uppercase; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+        .dropdown-item { padding: 10px 12px; font-size: 13px; color: var(--txt-main); display: flex; align-items: center; gap: 10px; border-radius: 6px; cursor: pointer; transition: 0.1s; }
+        .dropdown-item:hover { background: var(--bg-subtle); }
+        .dropdown-item.danger { color: var(--risk); }
+        .dropdown-item.danger:hover { background: var(--risk-bg); }
+
+        .notif-item { padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
+        .notif-item:hover { background: var(--bg-subtle); }
+        .notif-title { font-size: 12px; font-weight: 600; color: var(--txt-main); margin-bottom: 2px; }
+        .notif-time { font-size: 10px; color: var(--txt-mute); }
+
+        /* --- TEAM STACK (FIXED) --- */
+        .team-stack { display: flex; align-items: center; margin-right: 16px; }
+        .team-avatar { 
+            width: 32px; 
+            height: 32px; 
+            border-radius: 50%; 
+            border: 2px solid white; 
+            margin-left: -10px; 
+            background-size: cover; 
+            background-position: center;
+            background-color: #E2E8F0; /* Fallback color */
+            position: relative; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            cursor: pointer; 
+            transition: transform 0.2s;
+        }
+        .team-avatar:first-child { margin-left: 0; } /* First one shouldn't have negative margin */
+        .team-avatar:hover { transform: translateY(-3px); z-index: 10; }
+        .team-count { 
+            width: 32px; 
+            height: 32px; 
+            border-radius: 50%; 
+            background: #F1F5F9; 
+            border: 2px solid white; 
+            margin-left: -10px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 11px; 
+            font-weight: 600; 
+            color: var(--txt-sec); 
+            z-index: 0;
+        }
+
+        /* --- BUTTONS (BLUE PRIMARY) --- */
+        .btn-black { 
+            background: var(--accent); 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 6px; 
+            font-weight: 600; 
+        }
+        .btn-black:hover { background: var(--accent-dark); }
+        
+        .btn-white { 
+            background: white; 
+            border: 1px solid var(--border); 
+            color: var(--txt-main); 
+            padding: 10px 20px; 
+            border-radius: 6px; 
+            font-weight: 600; 
+        }
+        .modal-footer .btn-black, .modal-footer .btn-white { flex: 1; }
+
+        /* --- CONTENT VIEWS --- */
+        .content-area { flex: 1; overflow-y: auto; padding: 24px 32px; position: relative; }
+        .view-section { display: none; animation: fadeUp 0.3s ease; }
+        .view-section.active { display: block; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* DASHBOARD COMPONENTS */
+        .dashboard-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 16px; box-shadow: var(--shadow-card); }
+        .stat-val { font-size: 24px; font-weight: 700; color: var(--txt-main); margin-top: 8px; font-family: 'Plus Jakarta Sans'; }
+
+        /* Calendar */
+        .cal-row { display: flex; gap: 12px; margin-bottom: 24px; align-items: center; }
+        .calendar-strip { flex: 1; display: flex; gap: 12px; overflow-x: auto; padding: 4px 0; scrollbar-width: none; }
+        .date-btn { height: 60px; min-width: 60px; background: white; border: 1px solid var(--border); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-weight: 600; color: var(--txt-sec); transition: 0.2s; }
+        .date-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .date-card { min-width: 70px; padding: 10px; border: 1px solid var(--border); border-radius: 8px; display: flex; flex-direction: column; align-items: center; cursor: pointer; background: white; transition: 0.1s; }
+        .date-card.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .date-month { font-size: 10px; text-transform: uppercase; font-weight: 700; opacity: 0.7; margin-bottom: 4px; }
+        .date-num { font-size: 18px; font-weight: 700; font-family: 'Plus Jakarta Sans'; }
+
+        /* Bento Grid */
+        .bento-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; padding-bottom: 20px; }
+        .card { background: white; border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-card); overflow: hidden; display: flex; flex-direction: column; }
+        .card-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #FAFAFA; }
+        .card-title { font-size: 14px; font-weight: 700; color: var(--txt-main); display: flex; align-items: center; gap: 8px; }
+
+        /* Scrollable Lists */
+        .scroll-list { max-height: 350px; overflow-y: auto; }
+        .judgment-item { display: grid; grid-template-columns: 40px 1fr auto; gap: 16px; padding: 16px 20px; border-bottom: 1px solid var(--border); cursor: pointer; position: relative; }
+        .judgment-item:hover { background: var(--bg-subtle); }
+        .judgment-item:hover::before { content:''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); }
+
+        /* Intake Table & Badges */
+        .intake-container { display: flex; flex-direction: column; height: 100%; gap: 20px; }
+        .upload-zone { border: 2px dashed var(--border); border-radius: 12px; background: var(--bg-subtle); padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; transition: 0.2s; cursor: pointer; }
+        .upload-zone:hover { border-color: var(--accent); background: var(--accent-soft); }
+        .upload-icon { width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; box-shadow: var(--shadow-sm); color: var(--accent); }
+        .intake-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .intake-table thead th { text-align: left; color: var(--txt-mute); font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+        .intake-table tbody tr { border-bottom: 1px solid var(--border); transition: 0.1s; background: white; }
+        .intake-table tbody tr:hover { background: var(--bg-subtle); }
+        .intake-table td { padding: 16px; vertical-align: middle; color: var(--txt-sec); }
+        .badge-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .bp-ready { background: var(--safe-bg); color: var(--safe); }
+        .bp-proc { background: var(--accent-soft); color: var(--accent); }
+        .bp-flag { background: var(--risk-bg); color: var(--risk); }
+        .source-tag { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--txt-main); font-weight: 500; }
+        .source-icon { width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: white; }
+        .src-portal { background: #3B82F6; } .src-wa { background: #10B981; } .src-email { background: #F59E0B; }
+        .dot-green { width:6px; height:6px; background:var(--safe); border-radius:50%; }
+
+        /* ANALYTICS & CHARTS CSS */
+        .chart-donut { width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(var(--safe) 0% 75%, var(--warn) 75% 90%, var(--risk) 90% 100%); position: relative; display: flex; align-items: center; justify-content: center; }
+        .chart-donut::after { content: ''; position: absolute; width: 80px; height: 80px; background: white; border-radius: 50%; }
+        .donut-value { position: absolute; z-index: 1; font-size: 20px; font-weight: 700; font-family: 'Plus Jakarta Sans'; }
+        .bar-chart-row { display: flex; align-items: center; margin-bottom: 12px; font-size: 11px; }
+        .bar-label { width: 80px; color: var(--txt-sec); font-weight: 600; }
+        .bar-track { flex: 1; height: 8px; background: var(--bg-body); border-radius: 4px; overflow: hidden; margin: 0 12px; }
+        .bar-fill { height: 100%; border-radius: 4px; animation: slideRight 1s ease; }
+        @keyframes slideRight { from { width: 0; } }
+        .timeline-step { display: flex; gap: 12px; padding-bottom: 24px; position: relative; }
+        .timeline-step::before { content: ''; position: absolute; left: 15px; top: 24px; bottom: 0; width: 2px; background: var(--border); }
+        .timeline-step:last-child::before { display: none; }
+        .step-icon { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-subtle); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; z-index: 2; font-size: 12px; font-weight: 700; color: var(--txt-mute); }
+        .step-icon.done { background: var(--primary); border-color: var(--primary); color: white; }
+        .step-icon.active { border-color: var(--accent); color: var(--accent); background: white; }
+
+        /* MODALS */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .modal-overlay.open { display: flex; }
+        .modal-window { width: 90%; max-width: 1100px; height: 85vh; background: white; border-radius: 12px; display: flex; flex-direction: column; box-shadow: var(--shadow-modal); animation: fadeUp 0.2s ease; }
+        .modal-header { height: 60px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; font-weight: 700; }
+        .modal-body { flex: 1; display: flex; overflow: hidden; }
+        
+        .doc-preview { flex: 3; background: #334155; padding: 40px; overflow-y: auto; display: flex; justify-content: center; }
+        .paper-sheet { width: 600px; min-height: 800px; background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.3); padding: 40px; font-family: 'Courier New', monospace; font-size: 13px; position: relative; }
+        .highlight-box { position: absolute; border: 2px dashed #DC2626; background: rgba(220, 38, 38, 0.1); cursor: pointer; }
+        .highlight-label { position: absolute; top: -20px; right: 0; background: #DC2626; color: white; font-size: 10px; padding: 2px 4px; font-family: sans-serif; border-radius: 2px; }
+
+        .form-panel { flex: 2; border-left: 1px solid var(--border); padding: 24px; overflow-y: auto; background: var(--bg-subtle); display:flex; flex-direction:column;}
+        .ai-alert-box { background: #FEF2F2; border: 1px solid #FECACA; color: #B91C1C; padding: 12px; border-radius: 8px; font-size: 13px; margin-bottom: 24px; line-height: 1.5; }
+        .form-group { margin-bottom: 20px; }
+        .form-label { font-size: 11px; font-weight: 700; color: var(--txt-mute); text-transform: uppercase; margin-bottom: 6px; display: flex; justify-content: space-between; }
+        .form-input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-family: 'Inter'; font-size: 14px; }
+        .form-select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-family: 'Inter'; font-size: 14px; background:white; }
+        .form-input.conflict { border-color: #EF4444; background: #FEF2F2; color: #B91C1C; }
+        .remark-box { width: 100%; height: 100px; padding: 10px; border: 1px solid var(--border); border-radius: 6px; resize: none; font-family: 'Inter'; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand-box">
+            <!-- LOGO PLACEHOLDER: Replace src with actual logo if needed -->
+        <img src="Asset/treuus_logo-01.png" alt="Truva Logo" style="height: 32px; width: auto; object-fit: contain;">
+        </div>
+
+        <nav style="flex: 1; padding-top: 12px;">
+            <div class="nav-section">Audit Workspace</div>
+            
+            <div class="nav-item active" onclick="switchView('view-dash', this)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                <span>Dashboard</span>
+            </div>
+            
+            <div class="nav-item" onclick="switchView('view-intake', this)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                <span>Compliance Queue</span>
+                <span class="nav-badge">1</span>
+            </div>
+            
+            <div class="nav-item" onclick="switchView('view-judgments', this)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                <span>Pending Judgments</span>
+                <span class="nav-badge" style="background:#F59E0B;">2</span>
+            </div>
+
+            <div class="nav-section">System of Record</div>
+            
+            <div class="nav-item" onclick="switchView('view-logs', this)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span>Master Decision Log</span>
+            </div>
+            
+            <div class="nav-item" onclick="switchView('view-clients', this)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span>Client Directory</span>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- MAIN APP -->
+    <main class="app-main">
+        <header class="top-header">
+            <div class="search-memory">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--txt-mute)"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" placeholder="Search past decisions, rules, or evidence reasoning (CMD+K)">
+            </div>
+            
+            <div class="row">
+                <!-- Notifications -->
+                <div class="nav-icon-btn" onclick="toggleDropdown('notif-dropdown')" style="margin-right:16px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    <div class="notif-badge"></div>
+                    
+                    <div id="notif-dropdown" class="dropdown-menu">
+                        <div class="dropdown-header">Alerts</div>
+                        <div class="notif-item">
+                            <div class="notif-title">New Evidence Uploaded</div>
+                            <div class="notif-title" style="font-weight:400; font-size:11px; margin-bottom:4px;">Apex Mfg - 5 Files</div>
+                            <div class="notif-time">2 mins ago</div>
+                        </div>
+                        <div class="notif-item">
+                            <div class="notif-title" style="color:var(--risk);">Deadline Risk</div>
+                            <div class="notif-title" style="font-weight:400; font-size:11px; margin-bottom:4px;">GSTR-3B for TechSol</div>
+                            <div class="notif-time">1 hour ago</div>
+                        </div>
+                        <div style="padding:10px; font-size:11px; color:var(--accent); text-align:center; font-weight:600; cursor:pointer;">
+                            View All Notifications
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Stack (RESTORED & FIXED) -->
+                <div class="team-stack">
+                    <div class="team-avatar" style="background-image:url('https://ui-avatars.com/api/?name=Ananya&background=c7d2fe&color=312e81'); z-index:3;" title="Ananya"></div>
+                    <div class="team-avatar" style="background-image:url('https://ui-avatars.com/api/?name=John&background=fde68a&color=78350f'); z-index:2;" title="John"></div>
+                    <div class="team-avatar" style="background-image:url('https://ui-avatars.com/api/?name=Mike&background=bbf7d0&color=064e3b'); z-index:1;" title="Mike"></div>
+                    <div class="team-count">+2</div>
+                </div>
+
+                <div style="width:1px; height:24px; background:var(--border); margin-right:16px;"></div>
+
+                <!-- Profile Dropdown -->
+                <div style="position:relative;">
+                    <div class="row" style="cursor:pointer;" onclick="toggleDropdown('profile-dropdown')">
+                        <div style="width:32px; height:32px; background:var(--primary); border-radius:50%; color:white; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">PR</div>
+                    </div>
+
+                    <div id="profile-dropdown" class="dropdown-menu">
+                        <div style="padding:12px; border-bottom:1px solid var(--border); margin-bottom:4px;">
+                            <div style="font-weight:700; font-size:13px;">Prabhu Rajagopal</div>
+                            <div style="font-size:11px; color:var(--txt-mute);">IIT Madras</div>
+                        </div>
+                        <div class="dropdown-item">My Profile</div>
+                        <div class="dropdown-item">Firm Settings</div>
+                        <div class="dropdown-item">Audit Logs</div>
+                        <div style="height:1px; background:var(--border); margin:4px 0;"></div>
+                        <div href="index3.html" class="dropdown-item danger" onclick="alert('Logging out...')">Log Out</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            
+            <!-- 1. DASHBOARD VIEW -->
+            <div id="view-dash" class="view-section active">
+                <div class="dashboard-header">
+                    <div>
+                        <h1 style="font-family:'Plus Jakarta Sans'; font-size:24px; font-weight:700;">Welcome, Prof. Prabhu Rajagopal</h1>
+                        <p style="color:var(--txt-sec); font-size:14px; margin-top:4px;">Audit Status for Jan 21, 2026</p>
+                    </div>
+                    <button class="btn-black" onclick="openNewAction()" style="font-size:13px; width:auto; padding:8px 16px;">Add new log</button>
+                </div>
+
+                <div class="cal-row">
+                    <div class="calendar-strip">
+                        <div class="date-card active">
+                            <div class="date-month">TODAY</div><div class="date-num">21</div>
+                        </div>
+                        <div class="date-card">
+                            <div class="date-month">JAN</div><div class="date-num">22</div>
+                        </div>
+                        <div class="date-card" style="border-color:#FCD34D; background:#FFFBEB; color:#B45309;">
+                            <div class="date-month" style="color:#B45309;">GST DUE</div><div class="date-num">24</div>
+                        </div>
+                        <div class="date-card"><div class="date-month">JAN</div><div class="date-num">25</div></div>
+                        <div class="date-card"><div class="date-month">JAN</div><div class="date-num">26</div></div>
+                    </div>
+                    <div class="date-btn" onclick="alert('Opening Date Picker...')" title="Jump to past date">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div style="font-size:12px; color:var(--txt-sec); font-weight:600;">PENDING JUDGMENTS</div>
+                        <div class="stat-val">12</div>
+                        <div style="font-size:11px; color:var(--risk); margin-top:4px;">3 High Risk Items</div>
+                    </div>
+                    <div class="stat-card">
+                        <div style="font-size:12px; color:var(--txt-sec); font-weight:600;">DOCUMENTS INTAKE</div>
+                        <div class="stat-val">1,402</div>
+                        <div style="font-size:11px; color:var(--safe); margin-top:4px;">+124 today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div style="font-size:12px; color:var(--txt-sec); font-weight:600;">ENGAGEMENTS ACTIVE</div>
+                        <div class="stat-val">8</div>
+                        <div style="font-size:11px; color:var(--txt-mute); margin-top:4px;">2 Due this week</div>
+                    </div>
+                    <div class="stat-card">
+                        <div style="font-size:12px; color:var(--txt-sec); font-weight:600;">AUDIT MEMORY</div>
+                        <div class="stat-val">14k</div>
+                        <div style="font-size:11px; color:var(--safe); margin-top:4px;">Decisions Locked</div>
+                    </div>
+                </div>
+
+                <div class="bento-grid">
+                    <div class="col gap-3">
+                        <div class="card">
+                            <div class="card-head">
+                                <div class="card-title">Priority Judgments (AI Flagged)</div>
+                                <div style="font-size:11px; font-weight:600; background:var(--bg-body); padding:4px 8px; border-radius:4px;">5 Critical</div>
+                            </div>
+                            <div class="scroll-list">
+                                <div class="judgment-item" onclick="openReview()">
+                                    <div style="width:40px; height:40px; background:#FEF2F2; border-radius:8px; color:var(--risk); display:flex; align-items:center; justify-content:center; font-weight:700;">!</div>
+                                    <div class="col">
+                                        <div class="row" style="gap:8px; font-size:11px; color:var(--txt-mute);">
+                                            <strong>Apex Mfg</strong> • Statutory Audit
+                                        </div>
+                                        <div style="font-size:13px; font-weight:600; margin-top:4px; color:var(--txt-main);">GST Rate Mismatch (INV-2024-001)</div>
+                                        <div style="font-size:12px; color:var(--txt-sec); margin-top:2px;">Rate 12% vs Ledger 18%. Potential duplicate.</div>
+                                    </div>
+                                    <button class="btn-black" style="padding:6px 12px; font-size:11px;">Review</button>
+                                </div>
+                                <div class="judgment-item">
+                                    <div style="width:40px; height:40px; background:#FFFBEB; border-radius:8px; color:#B45309; display:flex; align-items:center; justify-content:center; font-weight:700;">?</div>
+                                    <div class="col">
+                                        <div class="row" style="gap:8px; font-size:11px; color:var(--txt-mute);">
+                                            <strong>Rao Assoc</strong> • Expense
+                                        </div>
+                                        <div style="font-size:13px; font-weight:600; margin-top:4px; color:var(--txt-main);">Duplicate Ledger Entry</div>
+                                        <div style="font-size:12px; color:var(--txt-sec); margin-top:2px;">Travel expense ₹12,000 claimed twice.</div>
+                                    </div>
+                                    <button class="btn-white" style="padding:6px 12px; font-size:11px;">Dismiss</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col gap-3">
+                        <div class="card" style="flex:1; max-height:400px;">
+                            <div class="card-head">
+                                <div class="card-title">Live Evidence Stream</div>
+                            </div>
+                            <div class="scroll-list" style="padding:0;">
+                                <div style="padding:12px 16px; border-bottom:1px solid var(--border); display:flex; gap:12px;">
+                                    <div style="width:32px; height:32px; background:#FEF2F2; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:#DC2626;">PDF</div>
+                                    <div>
+                                        <div style="font-size:12px; font-weight:600;">HDFC_Jan26.pdf</div>
+                                        <div style="font-size:10px; color:var(--txt-mute);">Just now • Auto-tagged Bank</div>
+                                    </div>
+                                </div>
+                                <div style="padding:12px 16px; border-bottom:1px solid var(--border); display:flex; gap:12px;">
+                                    <div style="width:32px; height:32px; background:#ECFDF5; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:#16A34A;">XLS</div>
+                                    <div>
+                                        <div style="font-size:12px; font-weight:600;">Sales_Q4.xlsx</div>
+                                        <div style="font-size:10px; color:var(--txt-mute);">5m ago • Revenue</div>
+                                    </div>
+                                </div>
+                                <div style="padding:12px 16px; border-bottom:1px solid var(--border); display:flex; gap:12px;">
+                                    <div style="width:32px; height:32px; background:#EFF6FF; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:#2563EB;">IMG</div>
+                                    <div>
+                                        <div style="font-size:12px; font-weight:600;">Inv_902.jpg</div>
+                                        <div style="font-size:10px; color:#F59E0B;">OCR Processing...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bento-grid">
+                    <div class="card">
+                        <div class="card-head">
+                            <div class="card-title">Compliance Watchlist</div>
+                        </div>
+                        <div class="scroll-list" style="padding:0;">
+                            <div style="padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:#FEF2F2;">
+                                <div class="row" style="gap:12px;">
+                                    <div style="text-align:center; min-width:40px;">
+                                        <div style="font-size:10px; color:var(--risk); font-weight:700;">JAN</div>
+                                        <div style="font-size:18px; font-weight:700; color:var(--txt-main);">24</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size:13px; font-weight:700; color:var(--risk);">GSTR-3B Filing</div>
+                                        <div style="font-size:11px; color:var(--txt-sec);">Monthly Return • 3 Clients Pending</div>
+                                    </div>
+                                </div>
+                                <div class="badge-pill bp-flag">2 Days Left</div>
+                            </div>
+                            <div style="padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between;">
+                                <div class="row" style="gap:12px;">
+                                    <div style="text-align:center; min-width:40px;">
+                                        <div style="font-size:10px; color:var(--txt-mute); font-weight:700;">FEB</div>
+                                        <div style="font-size:18px; font-weight:700; color:var(--txt-main);">07</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size:13px; font-weight:600;">TDS Payment</div>
+                                        <div style="font-size:11px; color:var(--txt-sec);">Income Tax • Deductors</div>
+                                    </div>
+                                </div>
+                                <div style="font-size:11px; color:var(--txt-mute);">On Track</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-head">
+                            <div class="card-title">Team Workload</div>
+                        </div>
+                        <div style="padding:20px;">
+                            <div style="margin-bottom:16px;">
+                                <div class="justify-between" style="display:flex; font-size:12px; margin-bottom:6px;">
+                                    <span style="font-weight:600;">Ananya (Senior)</span>
+                                    <span style="color:var(--risk);">12 Active</span>
+                                </div>
+                                <div style="width:100%; height:8px; background:var(--bg-body); border-radius:4px;">
+                                    <div style="width:85%; height:100%; background:var(--primary); border-radius:4px;"></div>
+                                </div>
+                            </div>
+                            <div style="margin-bottom:16px;">
+                                <div class="justify-between" style="display:flex; font-size:12px; margin-bottom:6px;">
+                                    <span style="font-weight:600;">Mike (Article)</span>
+                                    <span style="color:#F59E0B;">8 Active</span>
+                                </div>
+                                <div style="width:100%; height:8px; background:var(--bg-body); border-radius:4px;">
+                                    <div style="width:60%; height:100%; background:#F59E0B; border-radius:4px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. EVIDENCE INTAKE VIEW -->
+            <div id="view-intake" class="view-section">
+                <div class="dashboard-header">
+                    <div>
+                        <h1 style="font-family:'Plus Jakarta Sans'; font-size:24px; font-weight:700;">Evidence Intake</h1>
+                        <p style="color:var(--txt-sec); font-size:14px; margin-top:4px;">Processing Queue: 12 Files Pending Classification</p>
+                    </div>
+                    <div style="display:flex; gap:12px;">
+                        <button class="btn-white" style="font-size:13px;">Request Client</button>
+                        <button class="btn-black" style="font-size:13px; width:auto;">Upload Manually</button>
+                    </div>
+                </div>
+                <div class="intake-container">
+                    <div class="upload-zone">
+                        <div class="upload-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        </div>
+                        <div style="font-weight:600; color:var(--txt-main);">Drop files here to process instantly</div>
+                        <div style="font-size:12px; color:var(--txt-mute); margin-top:4px;">Supports PDF, Excel, Images (Max 50MB)</div>
+                    </div>
+                    <div class="row" style="gap:10px; margin-top:10px;">
+                        <button class="btn-white" style="padding:6px 12px; font-size:12px; background:var(--bg-subtle); border-color:transparent;">All Files (12)</button>
+                        <button class="btn-white" style="padding:6px 12px; font-size:12px; border:none; color:var(--txt-mute);">Ready for Review (8)</button>
+                        <button class="btn-white" style="padding:6px 12px; font-size:12px; border:none; color:var(--txt-mute);">AI Processing (3)</button>
+                    </div>
+                    <div class="card" style="box-shadow:none;">
+                        <table class="intake-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:30%;">File Name</th>
+                                    <th style="width:20%;">Source</th>
+                                    <th style="width:20%;">AI Classification</th>
+                                    <th style="width:15%;">Status</th>
+                                    <th style="width:15%;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="row" style="gap:10px;">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                            <div>
+                                                <div style="font-weight:600; color:var(--txt-main);">HDFC_Statement_Jan26.pdf</div>
+                                                <div style="font-size:11px; color:var(--txt-mute);">2.4 MB • Uploaded 10m ago</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><div class="source-tag"><div class="source-icon src-portal">P</div>Client Portal</div></td>
+                                    <td><div class="row" style="gap:6px;"><span style="background:#EFF6FF; color:#2563EB; font-size:11px; padding:2px 8px; border-radius:4px; font-weight:600;">Bank Stmt</span><span style="font-size:11px; color:var(--txt-mute);">99% Conf.</span></div></td>
+                                    <td><div class="badge-pill bp-ready"><div class="date-dot dot-green"></div> Ready</div></td>
+                                    <td><button class="btn-white" style="padding:6px 12px; font-size:11px;">Review Data</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. JUDGMENTS VIEW -->
+            <div id="view-judgments" class="view-section">
+                <div class="dashboard-header">
+                    <div>
+                        <h1 style="font-family:'Plus Jakarta Sans'; font-size:24px; font-weight:700;">Pending Judgments</h1>
+                        <p style="color:var(--txt-sec); font-size:14px; margin-top:4px;">Action Required: 5 High Risk items need partner attention.</p>
+                    </div>
+                    <div style="display:flex; gap:12px;">
+                        <button class="btn-white" style="font-size:13px;">Export List</button>
+                        <button class="btn-black" style="font-size:13px; width:auto;">Bulk Approve (Low Risk)</button>
+                    </div>
+                </div>
+                <div class="intake-container">
+                    <div class="row" style="gap:10px; border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:4px;">
+                        <button class="btn-black" style="padding:6px 12px; font-size:12px; border-radius:20px;">All Issues (14)</button>
+                        <button class="btn-white" style="padding:6px 12px; font-size:12px; border-radius:20px; border:none; color:var(--risk); background:var(--risk-bg); font-weight:600;">High Risk (5)</button>
+                        <button class="btn-white" style="padding:6px 12px; font-size:12px; border-radius:20px; border:none; color:var(--txt-sec);">GST Mismatches (8)</button>
+                    </div>
+                    <div class="card" style="box-shadow:none; overflow:hidden;">
+                        <table class="intake-table">
+                            <thead>
+                                <tr style="background:var(--bg-subtle);">
+                                    <th style="width:25%;">Client & Context</th>
+                                    <th style="width:35%;">AI Flag / Issue</th>
+                                    <th style="width:15%;">Risk Level</th>
+                                    <th style="width:15%;">Detected</th>
+                                    <th style="width:10%;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background:#FFF1F2;">
+                                    <td>
+                                        <div class="row" style="gap:10px;">
+                                            <div style="width:32px; height:32px; background:#1E293B; color:white; border-radius:6px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:11px;">AM</div>
+                                            <div>
+                                                <div style="font-weight:600; color:var(--txt-main);">Apex Mfg</div>
+                                                <div style="font-size:11px; color:var(--txt-mute);">FY 24-25 • Statutory</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="font-weight:600; color:var(--txt-main);">GST Rate Mismatch (INV-001)</div>
+                                        <div style="font-size:12px; color:var(--risk); margin-top:2px;">Invoice: 12% | Ledger: 18%</div>
+                                    </td>
+                                    <td><div class="badge-pill bp-flag">CRITICAL</div></td>
+                                    <td><div style="font-size:12px; color:var(--txt-sec);">2 hrs ago</div></td>
+                                    <td><button class="btn-black" onclick="openReview()" style="padding:6px 16px; font-size:11px;">Resolve</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="row" style="gap:10px;">
+                                            <div style="width:32px; height:32px; background:#475569; color:white; border-radius:6px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:11px;">RA</div>
+                                            <div>
+                                                <div style="font-weight:600; color:var(--txt-main);">Rao Assoc</div>
+                                                <div style="font-size:11px; color:var(--txt-mute);">Q3 Return • GST</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="font-weight:600; color:var(--txt-main);">Duplicate Ledger Entry</div>
+                                        <div style="font-size:12px; color:var(--txt-sec); margin-top:2px;">₹12,000 Travel Exp found twice.</div>
+                                    </td>
+                                    <td><div class="badge-pill" style="background:#FFFBEB; color:#B45309;">Warning</div></td>
+                                    <td><div style="font-size:12px; color:var(--txt-sec);">Yesterday</div></td>
+                                    <td><button class="btn-white" style="padding:6px 16px; font-size:11px;">Resolve</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. MASTER DECISION LOG -->
+            <div id="view-logs" class="view-section">
+                <div class="dashboard-header">
+                    <div>
+                        <div class="row" style="gap:10px;">
+                            <h1 style="font-family:'Plus Jakarta Sans'; font-size:24px; font-weight:700;">Master Decision Log</h1>
+                            <div style="background:var(--bg-subtle); border:1px solid var(--border); padding:4px 8px; border-radius:6px; font-size:11px; font-family:'JetBrains Mono', monospace; color:var(--txt-sec);"><span style="color:var(--safe);">●</span> LIVE_DB_CONNECTED</div>
+                        </div>
+                        <p style="color:var(--txt-sec); font-size:14px; margin-top:4px;">Immutable Audit Trail: 14,203 locked decisions across 8 financial years.</p>
+                    </div>
+                    <button class="btn-white" style="font-size:13px;">Export Audit Pack</button>
+                </div>
+                <div class="card" style="box-shadow:none; overflow:hidden;">
+                    <table class="intake-table">
+                        <thead>
+                            <tr style="background:var(--bg-subtle);">
+                                <th style="width:15%;">Decision ID</th>
+                                <th style="width:20%;">Context</th>
+                                <th style="width:15%;">Verdict</th>
+                                <th style="width:30%;">Rationale & Rule</th>
+                                <th style="width:15%;">Auditor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><div style="font-family:'JetBrains Mono'; font-size:11px; font-weight:700; color:var(--txt-sec);">TRV-26-8902</div></td>
+                                <td><div style="font-weight:600; font-size:12px;">Apex Mfg</div></td>
+                                <td><div class="badge-pill bp-ready" style="border:1px solid #A7F3D0;">ACCEPTED</div></td>
+                                <td>
+                                    <div style="font-size:12px; color:var(--txt-main); line-height:1.4;">"Input credit availed. Vendor confirmed filing."</div>
+                                    <div style="font-size:11px; color:var(--accent); font-weight:600; margin-top:4px;">Ref: GST Act Sec 16(2)</div>
+                                </td>
+                                <td><div class="row" style="gap:8px;"><div style="width:24px; height:24px; background:var(--primary); border-radius:50%; color:white; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">RS</div><div style="font-size:12px;">R. Sharma</div></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 5. CLIENT DIRECTORY -->
+            <div id="view-clients" class="view-section">
+                <div class="dashboard-header">
+                    <div>
+                        <h1 style="font-family:'Plus Jakarta Sans'; font-size:24px; font-weight:700;">Client Directory</h1>
+                        <p style="color:var(--txt-sec); font-size:14px; margin-top:4px;">Rao & Associates • 12 Active Engagements</p>
+                    </div>
+                    <div style="display:flex; gap:12px;">
+                        <button class="btn-white" style="font-size:13px;">Manage Staff</button>
+                        <button class="btn-black" onclick="openOnboard()" style="font-size:13px; width:auto;">+ Onboard Client</button>
+                    </div>
+                </div>
+                <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">
+                    <div class="stat-card" style="border-left:4px solid var(--safe);">
+                        <div style="font-size:12px; color:var(--txt-sec); font-weight:600;">FULLY COMPLIANT</div>
+                        <div class="stat-val">8 Clients</div>
+                    </div>
+                    <div class="stat-card" style="border-left:4px solid var(--warn);">
+                        <div style="font-size:12px; color:var(--txt-sec); font-weight:600;">DOCUMENTS PENDING</div>
+                        <div class="stat-val">3 Clients</div>
+                    </div>
+                    <div class="stat-card" style="border-left:4px solid var(--risk);">
+                        <div style="font-size:12px; color:var(--txt-sec); font-weight:600;">AUDIT RISK FLAGS</div>
+                        <div class="stat-val">1 Client</div>
+                    </div>
+                </div>
+                <div class="card" style="box-shadow:none; overflow:hidden;">
+                    <div class="card-head" style="background:white;">
+                        <div class="card-title">Active Engagements (FY 24-25)</div>
+                        <div class="search-memory" style="width:250px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input type="text" placeholder="Filter clients...">
+                        </div>
+                    </div>
+                    <table class="intake-table">
+                        <thead>
+                            <tr style="background:var(--bg-subtle);">
+                                <th style="width:30%;">Entity Name</th>
+                                <th style="width:20%;">Current Engagement</th>
+                                <th style="width:15%;">Completion</th>
+                                <th style="width:15%;">Next Deadline</th>
+                                <th style="width:10%;">Status</th>
+                                <th style="width:10%;">Workspace</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="row" style="gap:12px;">
+                                        <div style="width:36px; height:36px; background:#1E293B; border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:700;">AM</div>
+                                        <div>
+                                            <div style="font-weight:600; color:var(--txt-main);">Apex Manufacturing</div>
+                                            <div style="font-size:11px; color:var(--txt-mute);">Pvt Ltd • GSTIN: 29AABC...</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="font-size:13px; font-weight:500;">Statutory Audit</div>
+                                    <div style="font-size:11px; color:var(--txt-mute);">FY 2024-25</div>
+                                </td>
+                                <td>
+                                    <div style="width:100%; height:6px; background:var(--bg-body); border-radius:3px; margin-top:4px;">
+                                        <div style="width:45%; height:100%; background:var(--risk); border-radius:3px;"></div>
+                                    </div>
+                                    <div style="font-size:10px; color:var(--risk); margin-top:4px; font-weight:600;">45% (Stalled)</div>
+                                </td>
+                                <td>
+                                    <div style="font-weight:600; color:var(--txt-main);">Jan 24</div>
+                                    <div style="font-size:10px; color:var(--risk);">3 Days Left</div>
+                                </td>
+                                <td><div class="badge-pill bp-flag">Action Reqd</div></td>
+                                <td><button class="btn-white" onclick="switchView('view-client-detail', null)" style="padding:6px 12px; font-size:11px;">Open</button></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="row" style="gap:12px;">
+                                        <div style="width:36px; height:36px; background:#2563EB; border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:700;">TS</div>
+                                        <div>
+                                            <div style="font-weight:600; color:var(--txt-main);">TechSol Solutions</div>
+                                            <div style="font-size:11px; color:var(--txt-mute);">LLP • GSTIN: 29XXYZ...</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="font-size:13px; font-weight:500;">Q3 Compliance</div>
+                                </td>
+                                <td>
+                                    <div style="width:100%; height:6px; background:var(--bg-body); border-radius:3px; margin-top:4px;">
+                                        <div style="width:90%; height:100%; background:var(--safe); border-radius:3px;"></div>
+                                    </div>
+                                    <div style="font-size:10px; color:var(--safe); margin-top:4px; font-weight:600;">90% Ready</div>
+                                </td>
+                                <td><div style="font-weight:600; color:var(--txt-main);">Jan 31</div></td>
+                                <td><div class="badge-pill bp-ready">Healthy</div></td>
+                                <td><button class="btn-white" onclick="switchView('view-client-detail', null)" style="padding:6px 12px; font-size:11px;">Open</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 6. CLIENT ANALYTICS DETAIL VIEW -->
+            <div id="view-client-detail" class="view-section">
+                <div style="margin-bottom: 20px;">
+                    <button class="btn-white" onclick="switchView('view-clients', null)" style="padding: 8px 12px; font-size: 12px; display: flex; align-items: center; gap: 6px; width: auto;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"></path><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        Back to Directory
+                    </button>
+                </div>
+                <div class="dashboard-header">
+                    <div>
+                        <div class="row" style="gap:12px;">
+                            <div style="width:48px; height:48px; background:#1E293B; border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:16px;">AM</div>
+                            <div>
+                                <h1 style="font-family:'Plus Jakarta Sans'; font-size:24px; font-weight:700;">Apex Manufacturing Pvt Ltd</h1>
+                                <div class="row" style="gap:8px; margin-top:4px; font-size:13px; color:var(--txt-sec);">
+                                    <span>FY 2024-25</span><span style="color:var(--border);">|</span><span>GSTIN: 29AABCU9021K1Z5</span><span style="color:var(--border);">|</span><span class="badge-pill bp-flag">High Risk Watchlist</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:12px;">
+                        <button class="btn-white" style="font-size:13px;">View Ledger</button>
+                        <button class="btn-black" style="font-size:13px; width:auto;">Request Documents</button>
+                    </div>
+                </div>
+
+                <div class="bento-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                    <!-- Chart 1: Compliance Health -->
+                    <div class="card">
+                        <div class="card-head"><div class="card-title">Compliance Health</div></div>
+                        <div style="padding:24px; display:flex; flex-direction:column; align-items:center;">
+                            <div class="chart-donut"><div class="donut-value">75%</div></div>
+                            <div style="margin-top:20px; width:100%;">
+                                <div class="row justify-between" style="font-size:12px; margin-bottom:8px;"><div class="row" style="gap:6px;"><div class="dot-green"></div> Verified</div><span style="font-weight:600;">340 Docs</span></div>
+                                <div class="row justify-between" style="font-size:12px; margin-bottom:8px;"><div class="row" style="gap:6px;"><div class="dot-green" style="background:var(--warn);"></div> Pending</div><span style="font-weight:600;">45 Docs</span></div>
+                                <div class="row justify-between" style="font-size:12px;"><div class="row" style="gap:6px;"><div class="dot-green" style="background:var(--risk);"></div> Flagged</div><span style="font-weight:600;">12 Docs</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Chart 2: Risk Analysis -->
+                    <div class="card">
+                        <div class="card-head"><div class="card-title">Risk Categories</div></div>
+                        <div style="padding:24px;">
+                            <div class="bar-chart-row"><div class="bar-label">GST Input</div><div class="bar-track"><div class="bar-fill" style="width:85%; background:var(--risk);"></div></div><div style="font-weight:700;">Critical</div></div>
+                            <div class="bar-chart-row"><div class="bar-label">TDS</div><div class="bar-track"><div class="bar-fill" style="width:40%; background:var(--warn);"></div></div><div style="font-weight:700;">Med</div></div>
+                            <div class="bar-chart-row"><div class="bar-label">Payroll</div><div class="bar-track"><div class="bar-fill" style="width:10%; background:var(--safe);"></div></div><div style="font-weight:700;">Low</div></div>
+                        </div>
+                    </div>
+                    <!-- Timeline -->
+                    <div class="card">
+                        <div class="card-head"><div class="card-title">Audit Timeline</div></div>
+                        <div style="padding:24px;">
+                            <div class="timeline-step"><div class="step-icon done">✓</div><div><div style="font-size:13px; font-weight:600;">Engagement Setup</div><div style="font-size:11px; color:var(--txt-mute);">Completed Jan 05</div></div></div>
+                            <div class="timeline-step"><div class="step-icon active">3</div><div><div style="font-size:13px; font-weight:600; color:var(--accent);">Substantive Testing</div><div style="font-size:11px; color:var(--txt-mute);">In Progress</div></div></div>
+                            <div class="timeline-step"><div class="step-icon">4</div><div><div style="font-size:13px; font-weight:600;">Final Review</div><div style="font-size:11px; color:var(--txt-mute);">Pending</div></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- MODAL 1: JUDGMENT REVIEW -->
+    <div class="modal-overlay" id="review-modal">
+        <div class="modal-window">
+            <div class="modal-header">
+                <div>Resolving Issue: INV-2024-001 (Duplicate Potential)</div>
+                <button onclick="closeReview()" style="border:none; background:none; font-size:24px;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="doc-preview">
+                    <div class="paper-sheet">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:40px;">
+                            <h1 style="font-size:24px; font-weight:bold;">INVOICE</h1>
+                            <div style="text-align:right;"><div>APEX MFG</div><div>Date: 21-01-2026</div></div>
+                        </div>
+                        <div style="margin-bottom:20px;">To: Rao Components Pvt Ltd.</div>
+                        <div style="border-top:2px solid #000; border-bottom:2px solid #000; padding:10px 0; display:flex; margin-bottom:20px;">
+                            <div style="width:70%">Item</div><div style="width:30%">Cost</div>
+                        </div>
+                        <div style="display:flex; margin-bottom:40px; position:relative;">
+                            <div style="width:70%">Travel Exp</div><div style="width:30%">₹450.00</div>
+                            <div class="highlight-box" style="width: 80px; height: 30px; top: -5px; right: 100px;"><div class="highlight-label">Mismatch</div></div>
+                        </div>
+                        <div style="text-align:right; font-weight:bold; font-size:16px;">Total: ₹5,450.00</div>
+                    </div>
+                </div>
+                <div class="form-panel">
+                    <div class="ai-alert-box"><strong>AI ALERT:</strong> This amount conflicts with Ledger Entry #992 ($450 vs $540). <br>Likely typo in invoice generation.</div>
+                    <div class="form-group"><div class="form-label">Vendor Name</div><input type="text" class="form-input" value="APEX MANUFACTURING"></div>
+                    <div class="form-group"><div class="form-label">Disputed Item</div><input type="text" class="form-input conflict" value="450.00"></div>
+                    <div class="form-group"><div class="form-label">Auditor Remark</div><textarea class="remark-box" placeholder="Explain your decision..."></textarea></div>
+                    <div class="modal-footer">
+                        <button class="btn-white">Ask Client</button>
+                        <button class="btn-black" onclick="closeReview()">Accept & Log</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: QUICK ACTION -->
+    <div class="modal-overlay" id="new-action-modal">
+        <div class="modal-window" style="max-width: 600px; height: auto;">
+            <div class="modal-header">
+                <div>Create New</div>
+                <button onclick="closeNewAction()" style="border:none; background:none; font-size:24px;">&times;</button>
+            </div>
+            <div class="modal-body" style="flex-direction: column; padding: 24px;">
+                <p style="color:var(--txt-sec); font-size:14px; margin-bottom:20px;">Select an action to launch a workspace workflow.</p>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                    <button class="card" onclick="alert('Launching Engagement Wizard...')" style="padding:20px; align-items:flex-start; cursor:pointer; text-align:left;">
+                        <div style="font-weight:700; font-size:14px;">Start Engagement</div>
+                        <div style="font-size:12px; color:var(--txt-sec); margin-top:4px;">Create Audit, Tax, or Advisory project.</div>
+                    </button>
+                    <button class="card" onclick="closeNewAction(); switchView('view-intake', null)" style="padding:20px; align-items:flex-start; cursor:pointer; text-align:left;">
+                        <div style="font-weight:700; font-size:14px;">Upload Evidence</div>
+                        <div style="font-size:12px; color:var(--txt-sec); margin-top:4px;">Drag & drop client files for AI analysis.</div>
+                    </button>
+                    <button class="card" onclick="closeNewAction(); openOnboard();" style="padding:20px; align-items:flex-start; cursor:pointer; text-align:left;">
+                        <div style="font-weight:700; font-size:14px;">Onboard Client</div>
+                        <div style="font-size:12px; color:var(--txt-sec); margin-top:4px;">Add entity, configure rules & staff.</div>
+                    </button>
+                    <button class="card" onclick="alert('Opening User Settings...')" style="padding:20px; align-items:flex-start; cursor:pointer; text-align:left;">
+                        <div style="font-weight:700; font-size:14px;">Invite Staff</div>
+                        <div style="font-size:12px; color:var(--txt-sec); margin-top:4px;">Add Articles, Paid Assistants, or Partners.</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: ONBOARD CLIENT -->
+    <div class="modal-overlay" id="onboard-modal">
+        <div class="modal-window" style="max-width: 600px; height: auto;">
+            <div class="modal-header">
+                <div>Onboard New Client</div>
+                <button onclick="closeOnboard()" style="border:none; background:none; font-size:24px;">&times;</button>
+            </div>
+            <div class="modal-body" style="flex-direction: column; padding: 24px;">
+                <p style="color:var(--txt-sec); font-size:13px; margin-bottom:20px;">Add a new entity to your firm's compliance roster.</p>
+                <div class="form-group"><div class="form-label">Legal Entity Name</div><input type="text" class="form-input" placeholder="e.g. Acme Traders Pvt Ltd"></div>
+                <div class="row" style="gap:16px;">
+                    <div class="form-group" style="flex:1;"><div class="form-label">Constitution</div><select class="form-select"><option>Private Limited</option><option>LLP</option></select></div>
+                    <div class="form-group" style="flex:1;"><div class="form-label">GSTIN / Tax ID</div><input type="text" class="form-input" placeholder="29AAAAA0000A1Z5"></div>
+                </div>
+                <div class="form-group"><div class="form-label">Assign Partner</div><select class="form-select"><option>Dinesh Kumar</option><option>Jeevan Kumar</option></select></div>
+                <div class="modal-footer">
+                     <button class="btn-white" onclick="closeOnboard()">Cancel</button>
+                     <button class="btn-black" onclick="closeOnboard()">Create Client File</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation Logic
+        function switchView(viewId, btnElement) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if(btnElement) btnElement.classList.add('active');
+        }
+
+        // Modal Logic
+        function openReview() { document.getElementById('review-modal').classList.add('open'); }
+        function closeReview() { document.getElementById('review-modal').classList.remove('open'); }
+        function openNewAction() { document.getElementById('new-action-modal').classList.add('open'); }
+        function closeNewAction() { document.getElementById('new-action-modal').classList.remove('open'); }
+        function openOnboard() { document.getElementById('onboard-modal').classList.add('open'); }
+        function closeOnboard() { document.getElementById('onboard-modal').classList.remove('open'); }
+
+        // Dropdown Logic
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            const isVisible = dropdown.classList.contains('show');
+            document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('show'));
+            if (!isVisible) dropdown.classList.add('show');
+        }
+        window.onclick = function(event) {
+            if (!event.target.closest('.nav-icon-btn') && !event.target.closest('.row')) {
+                document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('show'));
+            }
+        }
+    </script>
+</body>
+</html>

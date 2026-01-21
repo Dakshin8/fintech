@@ -266,7 +266,7 @@
 
     <script>
 <script>
-    // 1. Toggle between Login and Signup
+    // Keep your toggleAuth function here...
     function toggleAuth(view) {
         const login = document.getElementById('login-view');
         const signup = document.getElementById('signup-view');
@@ -279,43 +279,28 @@
         }
     }
 
-    // 2. Fake Login Logic
-    document.getElementById('actualLoginForm').addEventListener('submit', function(e) {
-        e.preventDefault(); // Stop page refresh
+    // Logic for the Sign In button
+    document.querySelector('.btn-submit').onclick = function() {
+        // This 'grabs' the email and password from your inputs
+        const email = document.querySelector('input[type="email"]').value;
+        const password = document.querySelector('input[type="password"]').value;
 
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const btn = document.getElementById('signInBtn');
-        const error = document.getElementById('error-msg');
+        // THE CHECK
+        if (email === "admin@treuus.com" && password === "treuus2026") {
+            window.location.href = "dashboard.html";
+        } else {
+            alert("Wrong email or password! Use admin@treuus.com / treuus2026");
+        }
+    };
+</script>
 
-        // Set your credentials here
-        const TEST_EMAIL = "test@treuus.com";
-        const TEST_PASS = "password123";
 
-        // Visual Feedback for VC
-        btn.innerHTML = "Authenticating...";
-        btn.style.opacity = "0.7";
-        btn.disabled = true;
-        error.style.display = "none";
-
-        setTimeout(() => {
-            if (email === TEST_EMAIL && password === TEST_PASS) {
-                // Success! Redirect to dashboard
-                window.location.href = "dashboard.html";
-            } else {
-                // Failure
-                error.style.display = "block";
-                btn.innerHTML = "Sign In";
-                btn.style.opacity = "1";
-                btn.disabled = false;
-            }
-        }, 1500); // 1.5 second delay makes it feel like it's checking a database
-    });
 </script>
     </script>
 </body>
 
 </html>
+
 
 
 
